@@ -6,10 +6,12 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class DirectedGraph[V] {
+  // TODO: make it thread-safe
   type Map = util.IdentityHashMap[V, mutable.ArrayBuffer[V]]
   private val map = new Map()
 
   private def addVertex(v: V): Unit = {
+    // FIXME: we might need to make it
     if (!map.containsKey(v)) {
       map.put(v, new mutable.ArrayBuffer[V])
     }
@@ -28,6 +30,7 @@ class DirectedGraph[V] {
   }
 
   def topsort(): List[V] = {
+    // TODO: implement it efficiently
     def dfs(fn: V => Unit): Unit = {
       val used = new mutable.HashSet[V]()
 
