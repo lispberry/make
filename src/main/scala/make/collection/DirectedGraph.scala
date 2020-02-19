@@ -1,15 +1,17 @@
 package make.collection
 
+import java.util
+
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class DirectedGraph[V] {
-  type Map = mutable.HashMap[V, mutable.ArrayBuffer[V]]
+  type Map = util.IdentityHashMap[V, mutable.ArrayBuffer[V]]
   private val map = new Map()
 
   private def addVertex(v: V): Unit = {
-    if (!map.contains(v)) {
-      map(v) = new mutable.ArrayBuffer[V]
+    if (!map.containsKey(v)) {
+      map.put(v, new mutable.ArrayBuffer[V])
     }
   }
 
@@ -17,12 +19,12 @@ class DirectedGraph[V] {
     addVertex(x)
     addVertex(y)
 
-    map(x) += y
+    map.get(x) += y
   }
 
   def edges(owner: V): Iterator[V] = {
     addVertex(owner)
-    for (v <- map(owner).iterator) yield v
+    for (v <- map.get(owner).iterator) yield v
   }
 
   def topsort(): List[V] = {
@@ -33,7 +35,7 @@ class DirectedGraph[V] {
         if (used.contains(v)) return;
 
         used(v) = true
-        for (out <- map(v)) {
+        for (out <- map.get(v)) {
           if (!used.contains(out)) {
             loop(out)
           }
@@ -41,9 +43,7 @@ class DirectedGraph[V] {
         fn(v)
       }
 
-      for (v <- map.keysIterator) {
-        loop(v)
-      }
+      map.keySet().forEach(loop(_))
     }
 
     val res = new ListBuffer[V]
