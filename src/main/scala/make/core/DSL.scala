@@ -1,5 +1,7 @@
 package make.core
 
+import sys.process._
+
 class DSL(val owner: Recipe) {
   def file(name: String)(deps: String*)(command: Command): DSL = {
     val task = new FileTask(owner, name, command)
@@ -40,6 +42,10 @@ class DSL(val owner: Recipe) {
 }
 
 object DSL {
+  def sh(cmd: String): String = {
+    cmd.!!
+  }
+
   def recipe(fn: DSL => DSL): Recipe = {
     fn(new DSL(new Recipe)).recipe
   }
