@@ -1,7 +1,7 @@
 package make.core
 
 class SequentialStrategy extends ExecutionStrategy {
-  override def execute[R](recipe: Recipe[R]): Unit = {
+  override def execute(recipe: Recipe): Unit = {
     val tasks = recipe.topsort
 
     for (task <- tasks) {

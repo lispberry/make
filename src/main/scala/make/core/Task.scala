@@ -4,9 +4,9 @@ import java.util.Date
 
 import scala.collection.mutable.ArrayBuffer
 
-private[core] abstract class Task[R](val owner: Recipe[R],
+private[core] abstract class Task(val owner: Recipe,
                                       val name: String,
-                                      val command: Command[R]) {
+                                      val command: Command) {
   private val _dependencies = new ArrayBuffer[String]
 
   def dependencies: Iterator[String] = _dependencies.iterator

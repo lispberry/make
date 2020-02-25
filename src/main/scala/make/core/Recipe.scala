@@ -3,20 +3,21 @@ package make.core
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-class Recipe[R] {
-  private val env = new mutable.HashMap[String, Task[R]]
+class Recipe {
+  private val env = new mutable.HashMap[String, Task]
 
-  private[core] def addTask(task: Task[R]): Unit = {
+  private[core] def addTask(task: Task): Unit = {
     // TODO: error-handling
     env(task.name) = task
   }
 
   // TODO: error-handling
-  private[core] def toTask(name: String): Task[R] = env(name)
+  private[core] def hasTask(name: String): Boolean = env.contains(name)
+  private[core] def toTask(name: String): Task = env(name)
 
-  private[core] def topsort: List[Task[R]] = {
+  private[core] def topsort: List[Task] = {
     val used = new mutable.HashSet[String]
-    val res = new ListBuffer[Task[R]]
+    val res = new ListBuffer[Task]
 
     def dfs(name: String): Unit = {
       if (used(name)) return
@@ -36,5 +37,5 @@ class Recipe[R] {
     res.toList
   }
 
-  def tasks: Iterator[Task[R]] = env.valuesIterator
+  def tasks: Iterator[Task] = env.valuesIterator
 }

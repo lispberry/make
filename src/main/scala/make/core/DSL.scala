@@ -1,20 +1,28 @@
 package make.core
 
-class DSL[R](val owner: Recipe[R]) {
-  def file[R](name: String)(deps: String*)(command: Command[R]): DSL[R] = {
-    val task = new FileTask[R](owner, name, command)
+class DSL(val owner: Recipe) {
+  def file(name: String)(deps: String*)(command: Command): DSL = {
+    val task = new FileTask(owner, name, command)
     for (dep <- deps) {
+      // TODO: either make sure nonexistent tasks are permitted or create a specific Task subclass.
+      // TODO: UGLY, UGLY, UGLY
+      if (!owner.hasTask(dep)) {
+        val task = new FileTask(owner, dep, { _ => () })
+        owner.addTask(task)
+      }
+
       task.addDependency(dep)
     }
+    owner.addTask(task)
 
     this
   }
 
-  def recipe: Recipe[R] = owner
+  def recipe: Recipe = owner
 }
 
 object DSL {
-  def recipe[R](fn: DSL[R] => DSL[R]): Recipe[R] = {
-    fn(new DSL(new Recipe[R])).recipe
+  def recipe(fn: DSL => DSL): Recipe = {
+    fn(new DSL(new Recipe)).recipe
   }
 }
